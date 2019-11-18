@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 	"math/rand"
-	"net/http"
 	"time"
 )
 
@@ -43,11 +43,10 @@ func GetIceBreaker() string {
 	return questions[rand.Intn(len(questions))]
 }
 
-func GetIceBreakerHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, GetIceBreaker())
+func GetIceBreakerHandler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	return events.APIGatewayProxyResponse{Body: GetIceBreaker(), StatusCode: 200}, nil
 }
 
 func main() {
-	http.HandleFunc("/", GetIceBreakerHandler)
-	http.ListenAndServe(":8080", nil)
+	lambda.Start(GetIceBreakerHandler)
 }
